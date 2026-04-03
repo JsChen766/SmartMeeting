@@ -8,7 +8,7 @@
 
 ## 输入说明
 
-输入基于 `audio_input` 输出的 `audio_asset`。
+输入基于后端接入阶段准备好的 `audio_asset`。
 
 建议输入字段：
 

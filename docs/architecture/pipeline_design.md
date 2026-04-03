@@ -4,14 +4,13 @@
 
 建议的基础执行顺序如下：
 
-1. `audio_input`
-2. `asr`
-3. `diarization`
-4. `alignment`
-5. `translation`
-6. `summarization`
+1. `asr`
+2. `diarization`
+3. `alignment`
+4. `translation`
+5. `summarization`
 
-其中 `audio_input` 是前置模块，负责把输入音频规范化为统一资源描述。之后 `asr` 与 `diarization` 共享同一音频来源并分别处理，`alignment` 再将两者输出融合。
+其中音频上传、转码、规范化与任务创建属于后端接入阶段，不作为独立算法模块。算法链路从统一的 `audio_asset` 开始，之后 `asr` 与 `diarization` 共享同一音频来源并分别处理，`alignment` 再将两者输出融合。
 
 ## 可以并行的模块
 
@@ -22,7 +21,7 @@
 
 并行前提：
 
-1. 二者都依赖 `audio_input` 的输出
+1. 二者都依赖后端准备好的 `audio_asset`
 2. 二者共享同一份音频输入描述
 3. 二者互不依赖对方的中间文本结果
 
@@ -30,11 +29,9 @@
 
 以下关系必须串行：
 
-1. `audio_input -> asr`
-2. `audio_input -> diarization`
-3. `asr + diarization -> alignment`
-4. `alignment -> translation`
-5. `alignment -> summarization`
+1. `asr + diarization -> alignment`
+2. `alignment -> translation`
+3. `alignment -> summarization`
 
 说明：
 
@@ -77,7 +74,7 @@
 
 ```mermaid
 flowchart LR
-    A["audio_input<br/>统一音频输入"] --> B["asr<br/>生成 transcript segments"]
+    A["backend ingest<br/>准备统一 audio_asset"] --> B["asr<br/>生成 transcript segments"]
     A --> C["diarization<br/>生成 speaker segments"]
     B --> D["alignment<br/>按时间戳融合文本与 speaker"]
     C --> D

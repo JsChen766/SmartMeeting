@@ -122,7 +122,7 @@
 
 各模块边界如下：
 
-1. `audio_input` 负责输入音频接收与规范化描述
+1. 后端接入阶段负责音频接收、转码与规范化描述
 2. `asr` 负责文本识别，不负责 speaker 识别
 3. `diarization` 负责 speaker 时间片段识别，不负责文本生成
 4. `alignment` 负责按时间戳融合文本与 speaker
