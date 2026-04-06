@@ -1,0 +1,30 @@
+# 虚拟环境
+backend/.venv/
+venv/
+.venv/
+env/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE 配置
+.idea/
+.vscode/
+
+# --- ASR 模块专用 (非常重要) ---
+# 忽略存放 Whisper 模型的文件夹
+models/
+backend/app/modules/asr/models/
+
+# 忽略音频测试文件（避免上传大型媒体文件）
+*.wav
+*.mp3
+*.m4a
+*.flac
+
+# 忽略系统文件
+.DS_Store
+Thumbs.db
