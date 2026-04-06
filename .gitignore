@@ -1,4 +1,6 @@
 backend/.venv/
+backend/.hf_token
 .idea/
 __pycache__/
 *.pyc
+data/
