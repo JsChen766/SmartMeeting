@@ -2,5 +2,14 @@ fastapi==0.116.1
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
 python-multipart==0.0.20
+
+# Current diarization implementation depends on the 2.x pyannote API surface.
 numpy<2
 pyannote.audio==2.1.1
+
+faster-whisper==1.0.2
+
+pydub==0.25.1
+
+# torch>=2.0 with CUDA support
+# torch>=2.0
