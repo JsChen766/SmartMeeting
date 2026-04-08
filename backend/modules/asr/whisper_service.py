@@ -180,9 +180,9 @@ class WhisperService:
                 f"支持的语言: {list(self.SUPPORTED_LANGUAGES.keys())}"
             )
         
-        # 获取语言配置
+        # 获取语言配置，但不直接使用 initial_prompt，避免提示词被当成输出文本
         lang_config = self.SUPPORTED_LANGUAGES.get(target_lang)
-        initial_prompt = lang_config["initial_prompt"] if lang_config else None
+        actual_language = lang_config["code"] if lang_config else language
         
         logger.info(
             f"开始转录音频: {audio_path} "
@@ -193,13 +193,12 @@ class WhisperService:
             # 调用 faster-whisper 进行转录
             segments, info = self.model.transcribe(
                 str(audio_path),
-                language=language,  # 让模型自动检测如果 None
-                initial_prompt=initial_prompt,
+                language=actual_language,
                 beam_size=beam_size,
                 best_of=best_of,
                 patience=patience,
                 temperature=temperature,
-                condition_on_previous_text=True,  # 利用上下文改进连贯性
+                condition_on_previous_text=False,
                 verbose=False
             )
             
@@ -251,20 +250,20 @@ class WhisperService:
         if not audio_path.exists():
             raise FileNotFoundError(f"音频文件不存在: {audio_path}")
         
-        # 获取语言配置
+        # 获取语言配置，但不直接使用 initial_prompt，避免提示词污染输出
         lang_config = self.SUPPORTED_LANGUAGES.get(target_lang)
-        initial_prompt = lang_config["initial_prompt"] if lang_config else None
+        actual_language = lang_config["code"] if lang_config else None
         
         logger.info(f"开始转录音频（带时间戳）: {audio_path}")
         
         try:
             segments, _ = self.model.transcribe(
                 str(audio_path),
-                initial_prompt=initial_prompt,
+                language=actual_language,
                 beam_size=beam_size,
                 best_of=best_of,
                 patience=patience,
-                condition_on_previous_text=True,
+                condition_on_previous_text=False,
                 verbose=False
             )
             
