@@ -633,32 +633,40 @@ class MeetingTranscriberPipeline:
         self,
         audio_path: str,
         target_lang: str = "zh"
-    ) -> List[str]:
+    ) -> List[Dict]:
         """
         对音频进行转录并按句子分割返回结果
+        
+        返回符合 docs/modules/asr_io.md 规范的句子级别 ASRSegment
         
         Args:
             audio_path: 音频文件路径
             target_lang: 目标语言代码
         
         Returns:
-            句子列表，每个元素是一个完整的句子
+            ASRSegment 字典列表，每个包含：
+                - segment_id: 句子唯一标识
+                - start: 开始时间
+                - end: 结束时间
+                - text: 句子文本
+                - lang: 语言代码
+                - confidence: 置信度
         
         Example:
             >>> pipeline = MeetingTranscriberPipeline()
             >>> sentences = pipeline.transcribe_by_sentences("meeting.wav")
-            >>> for i, sentence in enumerate(sentences, 1):
-            ...     print(f"{i}. {sentence}")
+            >>> for sentence in sentences:
+            ...     print(f"{sentence['segment_id']}: {sentence['text']}")
         """
         logger.info(f"开始按句子转录音频: {audio_path}")
         
         try:
-            sentences = self.whisper_service.transcribe_by_sentences(
+            sentence_segments = self.whisper_service.transcribe_by_sentences(
                 audio_path, target_lang
             )
             
-            logger.info(f"按句子转录完成，共 {len(sentences)} 个句子")
-            return sentences
+            logger.info(f"按句子转录完成，共 {len(sentence_segments)} 个句子")
+            return sentence_segments
             
         except Exception as e:
             logger.error(f"按句子转录失败: {e}")

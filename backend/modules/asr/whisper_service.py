@@ -225,9 +225,11 @@ class WhisperService:
         beam_size: int = 5,
         best_of: int = 5,
         patience: float = 1.0
-    ) -> List[str]:
+    ) -> List[Dict]:
         """
         对音频进行转录并按句子分割返回结果
+        
+        符合 docs/modules/asr_io.md 的输出格式，返回句子级别的 ASRSegment
         
         Args:
             audio_path: 本地音频文件的绝对路径
@@ -237,25 +239,35 @@ class WhisperService:
             patience: 早停参数
         
         Returns:
-            句子列表，每个元素是一个完整的句子
+            ASRSegment 字典列表，每个包含：
+                - segment_id: 句子唯一标识（sent_0001 等）
+                - start: 句子开始时间（近似分配）
+                - end: 句子结束时间（近似分配）
+                - text: 句子文本
+                - lang: 语言代码
+                - confidence: 识别置信度
         
         Example:
             >>> service = WhisperService()
             >>> sentences = service.transcribe_by_sentences("meeting.wav")
-            >>> for i, sentence in enumerate(sentences, 1):
-            ...     print(f"{i}. {sentence}")
-            1. 大家好，欢迎参加这次会议。
-            2. 今天我们要讨论项目进展。
-            3. 请大家积极发言。
+            >>> for sentence in sentences:
+            ...     print(f"{sentence['segment_id']}: {sentence['text']}")
+            sent_0001: 大家好，欢迎参加这次会议。
+            sent_0002: 今天我们要讨论项目进展。
         """
-        # 先获取完整的转录文本
-        full_text = self.transcribe(
+        from backend.schemas.transcription import ASRSegment
+        
+        # 先获取带时间戳的原始segments，用于时间分配
+        timestamp_segments = self.transcribe_with_timestamps(
             audio_path,
             target_lang=target_lang,
             beam_size=beam_size,
             best_of=best_of,
             patience=patience
         )
+        
+        # 合并所有文本
+        full_text = " ".join([text for _, _, text in timestamp_segments])
         
         # 根据语言进行句子分割
         if target_lang == "zh":
@@ -314,8 +326,28 @@ class WhisperService:
         # 过滤掉太短的句子片段
         result_sentences = [s for s in result_sentences if len(s.strip()) > 1]
         
-        logger.info(f"按句子分割完成，共 {len(result_sentences)} 个句子")
-        return result_sentences
+        # 为句子分配时间戳（近似分配）
+        total_duration = timestamp_segments[-1][1] if timestamp_segments else 0.0
+        sentence_segments = []
+        
+        for idx, sentence_text in enumerate(result_sentences):
+            # 基于句子在列表中的位置分配时间戳
+            start_time = (idx / len(result_sentences)) * total_duration
+            end_time = ((idx + 1) / len(result_sentences)) * total_duration
+            
+            sentence_segment = ASRSegment(
+                segment_id=f"seg_{idx+1:04d}",  # 按照docs规范使用seg_xxxx格式
+                start=round(start_time, 2),
+                end=round(end_time, 2),
+                text=sentence_text,
+                lang=target_lang,
+                confidence=0.85  # 句子级别的置信度略低
+            ).model_dump()
+            
+            sentence_segments.append(sentence_segment)
+        
+        logger.info(f"按句子分割完成，共 {len(sentence_segments)} 个句子")
+        return sentence_segments
     
     def transcribe_with_timestamps(
         self,
