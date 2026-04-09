@@ -629,6 +629,41 @@ class MeetingTranscriberPipeline:
         
         return json_str
 
+    def transcribe_by_sentences(
+        self,
+        audio_path: str,
+        target_lang: str = "zh"
+    ) -> List[str]:
+        """
+        对音频进行转录并按句子分割返回结果
+        
+        Args:
+            audio_path: 音频文件路径
+            target_lang: 目标语言代码
+        
+        Returns:
+            句子列表，每个元素是一个完整的句子
+        
+        Example:
+            >>> pipeline = MeetingTranscriberPipeline()
+            >>> sentences = pipeline.transcribe_by_sentences("meeting.wav")
+            >>> for i, sentence in enumerate(sentences, 1):
+            ...     print(f"{i}. {sentence}")
+        """
+        logger.info(f"开始按句子转录音频: {audio_path}")
+        
+        try:
+            sentences = self.whisper_service.transcribe_by_sentences(
+                audio_path, target_lang
+            )
+            
+            logger.info(f"按句子转录完成，共 {len(sentences)} 个句子")
+            return sentences
+            
+        except Exception as e:
+            logger.error(f"按句子转录失败: {e}")
+            raise
+
     def process_combined_with_standards_new(
         self,
         audio_path: str,

@@ -79,7 +79,7 @@ class WhisperService:
         self.compute_type = compute_type
         self.model = None
         
-        # 确定实际使用的设备
+        # 确定实际使用的设备和计算类型
         if device == "auto":
             try:
                 import torch
@@ -88,6 +88,11 @@ class WhisperService:
                 self.actual_device = "cpu"
         else:
             self.actual_device = device
+            
+        # CPU 不支持 float16，使用 float32
+        if self.actual_device == "cpu" and self.compute_type == "float16":
+            self.compute_type = "float32"
+            logger.info("CPU 设备检测到，使用 float32 计算类型")
         
         self._model_initialized = False
     
@@ -198,8 +203,7 @@ class WhisperService:
                 best_of=best_of,
                 patience=patience,
                 temperature=temperature,
-                condition_on_previous_text=False,
-                verbose=False
+                condition_on_previous_text=False
             )
             
             logger.info(f"检测到的语言: {info.language} (可信度: {info.language_probability:.2%})")
@@ -213,6 +217,105 @@ class WhisperService:
         except Exception as e:
             logger.error(f"转录音频失败: {str(e)}")
             raise RuntimeError(f"Whisper 转录失败: {str(e)}")
+    
+    def transcribe_by_sentences(
+        self,
+        audio_path: str,
+        target_lang: str = "zh",
+        beam_size: int = 5,
+        best_of: int = 5,
+        patience: float = 1.0
+    ) -> List[str]:
+        """
+        对音频进行转录并按句子分割返回结果
+        
+        Args:
+            audio_path: 本地音频文件的绝对路径
+            target_lang: 目标语言代码
+            beam_size: 束搜索宽度
+            best_of: 从多个解码结果中选择最好的
+            patience: 早停参数
+        
+        Returns:
+            句子列表，每个元素是一个完整的句子
+        
+        Example:
+            >>> service = WhisperService()
+            >>> sentences = service.transcribe_by_sentences("meeting.wav")
+            >>> for i, sentence in enumerate(sentences, 1):
+            ...     print(f"{i}. {sentence}")
+            1. 大家好，欢迎参加这次会议。
+            2. 今天我们要讨论项目进展。
+            3. 请大家积极发言。
+        """
+        # 先获取完整的转录文本
+        full_text = self.transcribe(
+            audio_path,
+            target_lang=target_lang,
+            beam_size=beam_size,
+            best_of=best_of,
+            patience=patience
+        )
+        
+        # 根据语言进行句子分割
+        if target_lang == "zh":
+            # 中文句子分割：使用。！？作为分隔符
+            import re
+            sentences = re.split(r'([。！？])', full_text)
+            # 重新组合句子
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['。', '！', '？']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            # 处理最后一个不完整的句子
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+                
+        elif target_lang == "en":
+            # 英文句子分割：使用. ! ?作为分隔符
+            import re
+            sentences = re.split(r'([.!?])', full_text)
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['.', '!', '?']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+                
+        else:
+            # 其他语言：简单按标点分割
+            import re
+            sentences = re.split(r'([.!?。！？])', full_text)
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['.', '!', '?', '。', '！', '？']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+        
+        # 过滤掉太短的句子片段
+        result_sentences = [s for s in result_sentences if len(s.strip()) > 1]
+        
+        logger.info(f"按句子分割完成，共 {len(result_sentences)} 个句子")
+        return result_sentences
     
     def transcribe_with_timestamps(
         self,
@@ -263,8 +366,7 @@ class WhisperService:
                 beam_size=beam_size,
                 best_of=best_of,
                 patience=patience,
-                condition_on_previous_text=False,
-                verbose=False
+                condition_on_previous_text=False
             )
             
             # 提取带时间戳的结果
