@@ -723,11 +723,12 @@ class MeetingTranscriberPipeline:
             )
 
             # 构建标准响应
+            full_text_with_speaker = self._build_full_text_with_speaker(aligned_segments)
             response_data = {
                 "total_duration": round(total_duration, 2),
                 "language": target_lang,
                 "segments": aligned_segments,
-                "full_text": " ".join(seg['text'] for seg in aligned_segments)
+                "full_text": full_text_with_speaker
             }
 
             response = ModuleResponse(
@@ -741,6 +742,9 @@ class MeetingTranscriberPipeline:
             logger.info(f"  • 总时长: {response_data['total_duration']:.2f}秒")
             logger.info(f"  • 语言: {response_data['language']}")
             logger.info(f"  • 片段数: {len(response_data['segments'])}")
+            
+            # 输出详细的分段信息（含 speaker）
+            self._log_segments_with_speaker(response_data['segments'])
 
             return response.model_dump()
 
@@ -813,3 +817,63 @@ class MeetingTranscriberPipeline:
 
         logger.info(f"Alignment 完成: {len(aligned_segments)} 个对齐片段")
         return aligned_segments
+
+    def _build_full_text_with_speaker(self, segments: List[Dict[str, Any]]) -> str:
+        """
+        构建包含说话人信息的完整文本
+        
+        Args:
+            segments: 对齐后的转录片段列表
+        
+        Returns:
+            格式化的文本字符串，每个片段前面有说话人标签
+            格式: 【S1】文本1 【S2】文本2 【S1】文本3...
+        """
+        if not segments:
+            return ""
+        
+        formatted_texts = []
+        for seg in segments:
+            speaker = seg.get('speaker', 'UNKNOWN')
+            text = seg.get('text', '').strip()
+            if text:
+                formatted_texts.append(f"【{speaker}】{text}")
+        
+        return " ".join(formatted_texts)
+
+    def _log_segments_with_speaker(self, segments: List[Dict[str, Any]]) -> None:
+        """
+        输出详细的分段信息到日志（包含说话人标签）
+        
+        Args:
+            segments: 对齐后的转录片段列表
+        """
+        logger.info("\n【转录结果详情】")
+        logger.info("-" * 80)
+        
+        # 按说话人分组统计
+        speakers = {}
+        for seg in segments:
+            speaker = seg.get('speaker', 'UNKNOWN')
+            if speaker not in speakers:
+                speakers[speaker] = 0
+            speakers[speaker] += 1
+        
+        logger.info(f"说话人统计: {speakers}")
+        logger.info("-" * 80)
+        
+        # 输出逐段信息
+        for i, seg in enumerate(segments, 1):
+            speaker = seg.get('speaker', 'UNKNOWN')
+            start = seg.get('start', 0)
+            end = seg.get('end', 0)
+            text = seg.get('text', '')
+            segment_id = seg.get('segment_id', f'seg_{i:04d}')
+            
+            duration = end - start
+            logger.info(
+                f"[{i:3d}] {speaker} | {start:7.2f}s - {end:7.2f}s ({duration:5.2f}s) | {segment_id}"
+            )
+            logger.info(f"      {text}")
+        
+        logger.info("-" * 80 + "\n")
