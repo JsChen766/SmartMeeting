@@ -805,6 +805,7 @@ class MeetingTranscriberPipeline:
 
             # 创建对齐后的片段
             aligned_segment = TranscriptionSegment(
+                segment_id=asr_seg.get('segment_id', f'seg_{len(aligned_segments)+1:04d}'),
                 speaker=matched_speaker,
                 start=round(asr_start, 2),
                 end=round(asr_end, 2),

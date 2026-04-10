@@ -93,6 +93,7 @@ class TranscriptionSegment(BaseModel):
     这是 ASR 与 Diarization 融合后的结果
     
     Attributes:
+        segment_id: 文本片段唯一标识，例如 "seg_0001"
         speaker: 说话人标签（S1, S2, S3 等）
         start: 片段开始时间（单位：秒）
         end: 片段结束时间（单位：秒）
@@ -100,6 +101,7 @@ class TranscriptionSegment(BaseModel):
         lang: 语言代码
         confidence: 识别置信度
     """
+    segment_id: str = Field(..., description="文本片段唯一标识")
     speaker: str = Field(..., description="说话人标签")
     start: float = Field(..., description="片段开始时间（秒）")
     end: float = Field(..., description="片段结束时间（秒）")
@@ -110,6 +112,7 @@ class TranscriptionSegment(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
+                "segment_id": "seg_0001",
                 "speaker": "S1",
                 "start": 0.5,
                 "end": 3.2,
