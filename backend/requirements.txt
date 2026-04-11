@@ -2,6 +2,10 @@ fastapi==0.116.1
 uvicorn[standard]==0.35.0
 pydantic==2.11.7
 python-multipart==0.0.20
+numpy<2
+pyannote.audio==2.1.1
+faster-whisper==1.0.2
+pydub==0.25.1
 transformers>=4.48.0
 torch>=2.0.0
 sentencepiece>=0.2.0
@@ -9,3 +13,5 @@ python-dotenv>=1.0.1
 openai>=1.61.0
 langchain>=0.3.17
 opencc-python-reimplemented>=0.1.7
+google-genai
+requests
