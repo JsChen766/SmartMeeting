@@ -50,7 +50,10 @@ class MultiLanguageTranslator:
         generated_tokens = self.model.generate(
             **inputs, 
             forced_bos_token_id=forced_bos_token_id,
-            max_length=256
+            max_length=512,
+            no_repeat_ngram_size=3,  # Prevent repetitive loops like ",,,,,," or "吧 吧 吧"
+            num_beams=4,
+            early_stopping=True
         )
         
         # Decode

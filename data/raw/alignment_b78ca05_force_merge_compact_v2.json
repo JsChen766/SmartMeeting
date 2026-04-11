@@ -1,0 +1,202 @@
+{
+  "meeting_id": "mtg_meeting_01",
+  "status": "completed",
+  "data": {
+    "aligned_transcript": [
+      {
+        "segment_id": "seg_0001",
+        "start": 0.0,
+        "end": 4.12,
+        "speaker": "S1",
+        "text": "好现在开启了",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0002",
+        "start": 4.12,
+        "end": 11.91,
+        "speaker": "S2",
+        "text": "明天明天上午十点我就要出发了现在我明天晚上酒店还没订去云南",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0005_c",
+        "start": 11.91,
+        "end": 13.1,
+        "speaker": "S1",
+        "text": "是吧",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0006",
+        "start": 13.1,
+        "end": 19.36,
+        "speaker": "S2",
+        "text": "对两个没有规划的人一起出去玩就会发生这种情况",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0010",
+        "start": 19.36,
+        "end": 21.4,
+        "speaker": "S1",
+        "text": "那还订得到吗",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0011",
+        "start": 21.4,
+        "end": 31.52,
+        "speaker": "S2",
+        "text": "订得到吧感觉现在应该是淡季今天是清明明天明天是清明假期的最后一天应该大家都走了",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0016",
+        "start": 32.36,
+        "end": 33.38,
+        "speaker": "S1",
+        "text": "哦应该也是",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0017",
+        "start": 33.92,
+        "end": 35.78,
+        "speaker": "S2",
+        "text": "大家不想找一个民宿住",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0018",
+        "start": 37.18,
+        "end": 37.98,
+        "speaker": "S1",
+        "text": "可以的",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0019",
+        "start": 38.72,
+        "end": 46.96,
+        "speaker": "S2",
+        "text": "真的我们两个之前没有一起去一个就没有这种旅游我们俩之前都是出去找一个第二俩人在酒店里一起玩一起玩",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0024",
+        "start": 47.58,
+        "end": 49.06,
+        "speaker": "S1",
+        "text": "不是上次那个喝酒的吗",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0025",
+        "start": 49.32,
+        "end": 50.62,
+        "speaker": "S2",
+        "text": "对对对就是他",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0026",
+        "start": 51.78,
+        "end": 53.96,
+        "speaker": "S2",
+        "text": "就我俩那块干不了什么正事啊",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0027",
+        "start": 54.62,
+        "end": 61.84,
+        "speaker": "S2",
+        "text": "然后我们跟别人出去旅游从来都是别人做工具等我俩碰到一块真是麻烦了话说你",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0030_c",
+        "start": 61.84,
+        "end": 65.24,
+        "speaker": "S1",
+        "text": "们去哪你们去云南在哪里",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0032",
+        "start": 65.24,
+        "end": 73.78,
+        "speaker": "S2",
+        "text": "然后如果不累的话可能去一下香格里拉然后累的话就在大理待着了主要是想拍两套照片啥的",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0036",
+        "start": 73.78,
+        "end": 76.05,
+        "speaker": "S1",
+        "text": "可以大理很漂亮我记得我",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0037_c",
+        "start": 76.05,
+        "end": 84.46,
+        "speaker": "S2",
+        "text": "小时候去过一次都不记得了我觉得家长真不应该小时候带孩子去旅游一说什么去过不记得了",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0041",
+        "start": 84.46,
+        "end": 92.88,
+        "speaker": "S1",
+        "text": "确实但是我刚才小时候去过还是比较幸福的小时候去一下只是你大了不记得如",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0046_b",
+        "start": 92.88,
+        "end": 104.77,
+        "speaker": "S2",
+        "text": "果单跟我爸爸妈妈去还好要是带上老人的话我老爷是天生徒步圣体能早上五点半起床一直到晚上九点还说要去酒店楼下转一圈那",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0052_c",
+        "start": 104.77,
+        "end": 110.16,
+        "speaker": "S1",
+        "text": "确实我出去玩我那个叔叔五点半叫我起来去游泳",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0055",
+        "start": 110.16,
+        "end": 116.6,
+        "speaker": "S2",
+        "text": "给小小的老子累死了跟不上完全跟照这种节奏吧",
+        "lang": "zh"
+      },
+      {
+        "segment_id": "seg_0059",
+        "start": 116.6,
+        "end": 119.26,
+        "speaker": "S1",
+        "text": "OK 我结束录制",
+        "lang": "zh"
+      }
+    ],
+    "alignment_diagnostics": {
+      "unknown_duration_rate": 0.0,
+      "speaker_coverage_ratio": 0.803065,
+      "gap_count": 25.0,
+      "unknown_duration_sec": 0.0,
+      "total_aligned_duration_sec": 113.04,
+      "segment_count": 23.0,
+      "unknown_count": 0.0
+    }
+  },
+  "error": null
+}

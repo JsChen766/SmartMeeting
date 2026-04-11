@@ -1,0 +1,73 @@
+--- Testing: Chinese to English (zh -> en) ---
+Processing 23 segments...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|█| 512/512 [00:00<00:00, 12775.57
+
+--- Final Summary (Chinese to English) ---
+# 会议纪要
+
+## 总结
+本次对话主要涉及两位人士前往云南的旅行计划讨论。他们讨论了临时订酒店的情况（次日出发，在清明假期最后一天），表达了两人共同旅行缺乏规划的特点。对话中还提及了旅行偏好，特别是与长辈同行的不同体验，以及他们计划在云南大理和香格里拉拍照的意向。
+
+## 关键
+
+--- Full Translated Transcript (23 segments) ---        
+  [S1] Well, now it's open.
+  [S2] Tomorrow at ten o'clock in the morning I have to leave now that I haven't booked my hotel for Yunnan yet.
+  [S1] That's right, yes.
+  [S2] This is what happens when two unplanned people go out and play together.
+  [S1] Can you order that again?
+  [S2] Get the feeling that now should be the dry season today is the dry day tomorrow is the last day of the dry holiday we should all be gone.
+  [S1]  should also be
+  [S2] People don't want to find a place to stay.       
+  [S1] Yes, you can.
+  [S2] Seriously, without this kind of tourism, we'd both go out and find a second couple of people to play together in a hotel.
+  [S1] Isn't that the last one you drank?
+  [S2] Yes, yes, yes he is.
+  [S2] There was nothing good we could do about it.     
+  [S2] And then we went out on tour with other people, never being someone else's tools, so we ran into a really troubling piece of stuff.
+  [S1] Let's go wherever you go.
+  [S2] Then, if you're not tired, you might go to Shangri-La and then get tired and wait in line mostly to take two sets of photos.
+  [S1] It's pretty, I can remember me.
+  [S2] I don't think a parent should take their child on a trip as a child and forget anything they've gone to. 
+  [S1] It's true, but I've just been there as a kid, or as a happier kid, it's just that you've grown up and don't remember.
+  [S2] It's better to go with my dad or take an elderly person with me if I'm a student walking saint who gets up at 5:30 a.m. until 9:00 p.m., and then says to go down to the hotel for a circle.
+  [S1] In fact, when I went out to play, my uncle asked me to get up at 5:30 and go swimming.
+  [S2] For a little old boy tired of not being able to fully follow this rhythm.
+  [S1] OK, I'm finished recording.
+
+--- Testing: Chinese to Cantonese (zh -> yue) ---       
+Processing 23 segments...
+Loading weights: 100%|█| 512/512 [00:00<00:00, 12640.81
+
+--- Final Summary (Chinese to Cantonese) ---
+# 会议总结
+
+本次会议主要围绕两人即将前往云南的旅行计划展开讨论。他们计划明天上午十点出发，但截至谈话时，酒店尚未预订。讨论内容包括云南的行程安排（可能前往香格里拉或在大理停留）、拍摄照片的计划，以及以往旅行经历分享。两位参与者提到他们平时缺乏旅行规划能力，且与老年人一起旅行时存在节奏差异的问题。
+
+## 主要
+
+--- Full Translated Transcript (23 segments) ---        
+  [S1] 好啦,現在已經開了
+  [S2] 明天早上十點,我要出發,明天晚上我還未訂酒店前往雲 南.
+  [S1] 吧吧  是的
+  [S2] 呢樣會發生喺兩個沒計劃的人一起出去玩時
+  [S1] 還可以訂購嗎?
+  [S2] 今天應該是清晨,明天就是清晨假期的最後一天,大家都 應該走了
+  [S1] 應該也是
+  [S2] 每個人都不想找住宿.
+  [S1]  可以
+  [S2] 事實上,如果我們兩人從未一起去過旅遊,就不會有這樣 的旅遊.如果我們兩個以前都去搵第二個人,一起去酒店玩.     
+  [S1] 唔係最後一次喝酒的人嗎?
+  [S2] 對,對,對.佢係他.
+  [S2] 我哋兩個人無辦法做任何好事
+  [S2] 然後我們和別人出去旅行,從來都唔係別人做工具,所以 我們遇到了一個真正困難的東西.
+  [S1] 你去哪,你去雲南去哪
+  [S2] 然後,如果不累,可能去香格里拉,然後再累,等待在馬裏 裏,主要想拍兩張照片.
+  [S1] 可以說大理很漂亮 我記得我
+  [S2] 我覺得父母不應該帶小朋友去旅遊,忘記任何經歷.     
+  [S1] 確實,但我剛剛去過一個小時候,或者一個比較快樂的小 時候去過,只是你已經長大了,不記得.
+  [S2] 如果要跟爸爸去,或者帶老人去,我覺得天主教可以早上 五點半起到晚上九點,再說要去酒店樓下一圈.
+  [S1] 我出去玩,我叔叔叫我起牀去游泳,五點半
+  [S2] 對於一個小老仔來說,他已經很累,無法完全跟隨這樣的 節奏.
+  [S1] OK,我完成了錄音
