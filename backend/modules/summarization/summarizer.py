@@ -1,6 +1,11 @@
 from typing import List, Dict, Optional
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-import torch
+try:
+    from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+    import torch
+except ImportError:
+    AutoModelForSeq2SeqLM = None
+    AutoTokenizer = None
+    torch = None
 import os
 import re
 import json
@@ -8,42 +13,32 @@ import requests
 import time
 from openai import OpenAI
 from google import genai
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 class MeetingSummarizer:
     def __init__(self, model_name: str = "facebook/bart-large-cnn"):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch is not None and torch.cuda.is_available() else "cpu"
         self.model_name = model_name
         self.tokenizer = None
         self.model = None
         
-        # 1. Initialize OpenRouter if API key is available
-        self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
-        self.llm_model = os.getenv("LLM_MODEL", "z-ai/glm-4.5-air:free")
+        # 1. Initialize OpenRouter (Hardcoded as requested)
+        self.openrouter_api_key = "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"
+        self.llm_model = "z-ai/glm-4.5-air:free"
 
-        # 2. Initialize Gemini (New SDK: google-genai)
-        self.gemini_api_key = os.getenv("GEMINI_API_KEY")
-        if self.gemini_api_key and not self.openrouter_api_key:
-            self.gemini_client = genai.Client(api_key=self.gemini_api_key)
-            self.gemini_model_id = self.llm_model if "gemini" in self.llm_model else "gemini-1.5-flash"
-        else:
-            self.gemini_client = None
+        # 2. Initialize Gemini (Optional)
+        self.gemini_api_key = None
+        self.gemini_client = None
 
-        # 3. Fallback to OpenAI compatible client (Aliyun Bailian etc.)
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
-        self.openai_base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-        if self.openai_api_key and not self.openrouter_api_key:
-            self.openai_client = OpenAI(api_key=self.openai_api_key, base_url=self.openai_base_url)
-        else:
-            self.openai_client = None
+        # 3. Fallback to OpenAI compatible client (Optional)
+        self.openai_api_key = None
+        self.openai_client = None
 
     def _load_model(self):
         if self.model is None and not self.gemini_client and not self.openai_client and not self.openrouter_api_key:
+            if AutoModelForSeq2SeqLM is None:
+                print("Warning: transformers/torch not installed. Local fallback summary disabled.")
+                return
             try:
-                from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
                 self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
                 self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name).to(self.device)
             except Exception as e:
@@ -87,6 +82,8 @@ class MeetingSummarizer:
                     headers={
                         "Authorization": f"Bearer {self.openrouter_api_key}",
                         "Content-Type": "application/json",
+                        "HTTP-Referer": "https://github.com/SmartMeeting", # Optional
+                        "X-OpenRouter-Title": "SmartMeeting Assistant", # Optional
                     },
                     data=json.dumps({
                         "model": self.llm_model,

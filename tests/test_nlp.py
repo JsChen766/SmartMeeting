@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 # Add project root to sys.path
-project_root = str(Path(__file__).resolve().parent.parent.parent)
+project_root = str(Path(__file__).resolve().parent.parent)
 sys.path.append(project_root)
 
 from backend.pipelines.translation_summarization import TranslationSummarizationPipeline

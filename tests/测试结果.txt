@@ -1,0 +1,74 @@
+--- Testing: Chinese to English (zh -> en) ---
+Processing 23 segments...
+Translating 23 segments to en...
+Generating summary...
+
+--- Final Summary (Chinese to English) ---
+# 会议总结
+
+##
+这段对话是两位朋友关于即将前往云南旅行的讨论。他们提到需要在清明假期最后一天预订酒店，计划前往大理和香格里拉，主要目的是拍照留念。对话中他们还反思了与长辈一起旅行的不同体验，以及自己作为不太擅长规划的人的旅行特点。
+
+##
+
+--- Full Translated Transcript (23 segments) ---
+  [S1] Okay, now we're starting
+  [S2] Tomorrow, tomorrow at 10 AM I'm setting off, but I haven't booked a hotel for tomorrow night to go to Yunnan
+  [S1] Right?
+  [S2] Yeah, this is what happens when two people without plans go traveling together
+  [S1] Can we still book one?
+  [S2] I think we can still book. I feel like it's the off-season now. Today is Qingming Festival, and tomorrow is the last day of the Qingming holiday, so everyone should be leaving
+  [S1] Oh, probably
+  [S2] Nobody wants to find a guesthouse to stay in
+  [S1] It's okay
+  [S2] Really, the two of us have never traveled together before, so we don't have this kind of travel experience. Before, we would both go out and find a second person, and the two of us would play together in a hotel
+  [S1] Isn't that the one who drank last time?
+  [S2] Yes, yes, that's him
+  [S2] The two of us can't get anything serious done
+  [S2] And when we travel with others, it's always others who do the planning. When the two of us get together, it's really troublesome. By the way, you
+  [S1] Where are you going? Where in Yunnan are you going?        
+  [S2] And if we're not tired, we might go to Shangri-La, otherwise we'll stay in Dali. Mainly we want to take a couple of photos or something
+  [S1] Okay, Dali is very beautiful. I remember
+  [S2] I went there once as a child but don't remember it. I really think parents shouldn't take their children traveling when they're young because they won't remember it when you ask them
+  [S1] That's true, but I think it's still quite happy to have gone as a child. It's just that you don't remember when you grow up  
+  [S2] If I just go with my parents, it's okay, but if we bring the elderly, my grandpa is a natural hiking saint who can wake up at 5:30 AM and stay active until 9 PM, saying he wants to walk around downstairs at the hotel
+  [S1] Really, when I go out traveling, my uncle wakes me up at 5:30 AM to go swimming
+  [S2] It exhausted me, a little guy, I couldn't keep up at all with that kind of pace
+  [S1] Okay, I'm ending the recording
+
+--- Testing: Chinese to Cantonese (zh -> yue) ---
+Processing 23 segments...
+Translating 23 segments to yue...
+Generating summary...
+
+--- Final Summary (Chinese to Cantonese) ---
+# 会议
+
+本次对话主要是两位朋友（S1和S2）关于即将前往云南旅行的非正式交流。S2计划明天上午十点出发，但尚未预订酒店。他们讨论了旅游偏好，提到通常选择在酒店内活动而非户外探险。计划行程包括大理和可能前往香格里拉，主要目的是拍摄照片。对话中还回忆了童年旅行经历以及与长辈一起旅行的挑战和不适。
+
+## 关键
+
+--- Full Translated Transcript (23 segments) ---
+  [S1] 好而家開始喇
+  [S2] 聽日聽日上晝十點我就要出發喇而家我聽日晚上酒店訂未訂去雲南 
+  [S1] 係唔係
+  [S2] 對兩個冇規劃嘅人一齊出去玩就會發生呢種情況
+  [S1] 咁仲訂得到唔
+  [S2] 訂得到啦感覺而家應該係淡季今日係清明聽日聽日係清明假期嘅最 後一日應該大家都走咗
+  [S1] 哦應該都係
+  [S2] 大家唔想搵間民宿住
+  [S1] 可以嘅
+  [S2] 真係我哋兩個之前冇一齊去過一個就冇呢種旅遊我哋兩個之前都係 搵間酒店兩個人喺入面一齊玩
+  [S1] 唔係上次個個飲酒嘅嗰個
+  [S2] 對對對就係佢
+  [S2] 就我哋兩個嗰度做唔到咩正事啊
+  [S2] 之後我哋同其他人出去旅遊從來都係其他人做工具等我哋兩個撞到 一塊真係麻煗啦講你
+  [S1] 哋去邊你哋去雲南喺邊度
+  [S2] 之後如果唔攰嘅話可能去下香格里拉攰嘅話就喺大理住住主要係想 影兩套相啲咩嘅
+  [S1] 可以大理好靚我記得我
+  [S2] 細個去過一次都唔記得咗我覺得家長真唔應該細個帶細路去旅遊一 講話去過唔記得咗
+  [S1] 確實但我剛細個去過都係比較幸福嘅細個去下只係你大咗唔記得   
+  [S2] 果單同我爸爸媽媽去都好要係帶上老人嘅話我老爺係天生徒步聖體 能上晝五點半起床一直到夜晚九點仲話要去酒店樓下轉一圈咁
+  [S1] 確實我出去玩我個叔叔五點半叫我起身去游水
+  [S2] 俾細細個嘅老子累死咗跟唔上完全跟住呢種節奏
+  [S1] OK 我結錄影

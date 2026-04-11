@@ -3,5 +3,6 @@
 """
 
 from .meeting_pipeline import MeetingTranscriberPipeline, AudioSlicer
+from .translation_summarization import TranslationSummarizationPipeline
 
-__all__ = ["MeetingTranscriberPipeline", "AudioSlicer"]
+__all__ = ["MeetingTranscriberPipeline", "AudioSlicer", "TranslationSummarizationPipeline"]
