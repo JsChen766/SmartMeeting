@@ -1,4 +1,7 @@
+backend/venv/
 backend/.venv/
 .idea/
 __pycache__/
 *.pyc
+.env
+*.log

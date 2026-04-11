@@ -53,3 +53,27 @@ project-root/
 2. 再定各模块 IO
 3. 再定 API 交互
 4. 最后开始编码
+
+## 如何运行后端模块
+
+1. **创建虚拟环境** (Python 3.10):
+   ```bash
+   cd backend
+   py -3.10 -m venv venv
+   .\venv\Scripts\activate
+   ```
+
+2. **安装依赖**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **运行测试**:
+   ```bash
+   python tests/test_nlp.py
+   ```
+
+4. **启动 FastAPI 服务**:
+   ```bash
+   uvicorn app.main:app --reload
+   ```

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from backend.app.routers.translation_summarization import router as nlp_router
 
 
 def create_app() -> FastAPI:
@@ -14,6 +15,9 @@ def create_app() -> FastAPI:
             "status": "ok",
             "service": "smart-meeting-backend",
         }
+
+    # Register routers
+    app.include_router(nlp_router)
 
     return app
 
