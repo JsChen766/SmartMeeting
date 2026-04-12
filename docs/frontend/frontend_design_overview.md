@@ -624,6 +624,11 @@ VITE_ENABLE_MSW=false
 
 本項目明確要求由兩位前端工程師並行完成。為避免互相阻塞，建議按「功能邊界 + 模塊邊界」拆分。
 
+### 17.0 角色文檔入口
+
+- 工程師 A 開發手冊：`docs/frontend/developer_a_playbook.md`
+- 工程師 B 開發手冊：`docs/frontend/developer_b_playbook.md`
+
 ### 17.1 工程師 A：上傳、狀態、應用骨架
 
 #### 負責範圍
