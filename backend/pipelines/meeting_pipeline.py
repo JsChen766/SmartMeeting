@@ -229,6 +229,28 @@ class MeetingTranscriberPipeline:
                     logger.debug(f"临时文件已清理: {temp_dir}")
             except Exception as e:
                 logger.warning(f"清理临时文件失败: {str(e)}")
+
+    def _get_audio_duration(self, audio_path: str) -> float:
+        """
+        获取音频文件的总时长
+
+        Args:
+            audio_path: 音频文件路径
+
+        Returns:
+            音频时长（秒）
+        """
+        try:
+            if AudioSegment is None:
+                logger.warning("pydub 未安装，无法获取精确的音频时长")
+                return 0.0
+
+            audio = AudioSegment.from_file(audio_path)
+            return len(audio) / 1000.0
+
+        except Exception as e:
+            logger.warning(f"获取音频时长失败: {str(e)}")
+            return 0.0
     
     def transcribe(
         self,
@@ -536,28 +558,6 @@ class MeetingTranscriberPipeline:
                 error=error_info
             )
             return response.model_dump()
-    
-        """
-        获取音频文件的总时长
-        
-        Args:
-            audio_path: 音频文件路径
-        
-        Returns:
-            音频时长（秒）
-        """
-        try:
-            if AudioSegment is None:
-                logger.warning("pydub 未安装，无法获取精确的音频时长")
-                return 0.0
-            
-            audio = AudioSegment.from_file(audio_path)
-            duration = len(audio) / 1000.0  # 从毫秒转换为秒
-            return duration
-        
-        except Exception as e:
-            logger.warning(f"获取音频时长失败: {str(e)}")
-            return 0.0
     
     def transcribe_to_dict(
         self,

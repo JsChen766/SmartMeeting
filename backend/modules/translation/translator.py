@@ -2,6 +2,7 @@ import os
 import json
 import requests
 from typing import List, Dict, Optional
+from dotenv import load_dotenv
 try:
     from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
     import torch
@@ -10,6 +11,8 @@ except ImportError:
     AutoTokenizer = None
     torch = None
 from opencc import OpenCC
+
+load_dotenv()
 
 class MultiLanguageTranslator:
     def __init__(self, model_name: str = "facebook/nllb-200-distilled-600M"):
@@ -21,9 +24,8 @@ class MultiLanguageTranslator:
         self.s2t_converter = OpenCC('s2t')
         self.t2s_converter = OpenCC('t2s')
         
-        # Hardcoded OpenRouter config as requested
-        self.openrouter_api_key = "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"
-        self.llm_model = "z-ai/glm-4.5-air:free"
+        self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+        self.llm_model = os.getenv("OPENROUTER_MODEL", "z-ai/glm-4.5-air:free")
 
     def _load_model(self):
         # We prefer using LLM (OpenRouter) in this environment for reliability

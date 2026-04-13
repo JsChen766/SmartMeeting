@@ -13,7 +13,7 @@ pydub==0.25.1
 
 # torch>=2.0 with CUDA support
 # torch>=2.0
-transformers
+transformers==4.37.2
 torch
 opencc
 openai

@@ -13,6 +13,9 @@ import requests
 import time
 from openai import OpenAI
 from google import genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class MeetingSummarizer:
     def __init__(self, model_name: str = "facebook/bart-large-cnn"):
@@ -21,9 +24,8 @@ class MeetingSummarizer:
         self.tokenizer = None
         self.model = None
         
-        # 1. Initialize OpenRouter (Hardcoded as requested)
-        self.openrouter_api_key = "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"
-        self.llm_model = "z-ai/glm-4.5-air:free"
+        self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+        self.llm_model = os.getenv("OPENROUTER_MODEL", "z-ai/glm-4.5-air:free")
 
         # 2. Initialize Gemini (Optional)
         self.gemini_api_key = None
