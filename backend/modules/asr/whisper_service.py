@@ -79,7 +79,7 @@ class WhisperService:
         self.compute_type = compute_type
         self.model = None
         
-        # 确定实际使用的设备
+        # 确定实际使用的设备和计算类型
         if device == "auto":
             try:
                 import torch
@@ -88,6 +88,11 @@ class WhisperService:
                 self.actual_device = "cpu"
         else:
             self.actual_device = device
+            
+        # CPU 不支持 float16，使用 float32
+        if self.actual_device == "cpu" and self.compute_type == "float16":
+            self.compute_type = "float32"
+            logger.info("CPU 设备检测到，使用 float32 计算类型")
         
         self._model_initialized = False
     
@@ -180,9 +185,9 @@ class WhisperService:
                 f"支持的语言: {list(self.SUPPORTED_LANGUAGES.keys())}"
             )
         
-        # 获取语言配置
+        # 获取语言配置，但不直接使用 initial_prompt，避免提示词被当成输出文本
         lang_config = self.SUPPORTED_LANGUAGES.get(target_lang)
-        initial_prompt = lang_config["initial_prompt"] if lang_config else None
+        actual_language = lang_config["code"] if lang_config else language
         
         logger.info(
             f"开始转录音频: {audio_path} "
@@ -193,14 +198,12 @@ class WhisperService:
             # 调用 faster-whisper 进行转录
             segments, info = self.model.transcribe(
                 str(audio_path),
-                language=language,  # 让模型自动检测如果 None
-                initial_prompt=initial_prompt,
+                language=actual_language,
                 beam_size=beam_size,
                 best_of=best_of,
                 patience=patience,
                 temperature=temperature,
-                condition_on_previous_text=True,  # 利用上下文改进连贯性
-                verbose=False
+                condition_on_previous_text=False
             )
             
             logger.info(f"检测到的语言: {info.language} (可信度: {info.language_probability:.2%})")
@@ -214,6 +217,137 @@ class WhisperService:
         except Exception as e:
             logger.error(f"转录音频失败: {str(e)}")
             raise RuntimeError(f"Whisper 转录失败: {str(e)}")
+    
+    def transcribe_by_sentences(
+        self,
+        audio_path: str,
+        target_lang: str = "zh",
+        beam_size: int = 5,
+        best_of: int = 5,
+        patience: float = 1.0
+    ) -> List[Dict]:
+        """
+        对音频进行转录并按句子分割返回结果
+        
+        符合 docs/modules/asr_io.md 的输出格式，返回句子级别的 ASRSegment
+        
+        Args:
+            audio_path: 本地音频文件的绝对路径
+            target_lang: 目标语言代码
+            beam_size: 束搜索宽度
+            best_of: 从多个解码结果中选择最好的
+            patience: 早停参数
+        
+        Returns:
+            ASRSegment 字典列表，每个包含：
+                - segment_id: 句子唯一标识（sent_0001 等）
+                - start: 句子开始时间（近似分配）
+                - end: 句子结束时间（近似分配）
+                - text: 句子文本
+                - lang: 语言代码
+                - confidence: 识别置信度
+        
+        Example:
+            >>> service = WhisperService()
+            >>> sentences = service.transcribe_by_sentences("meeting.wav")
+            >>> for sentence in sentences:
+            ...     print(f"{sentence['segment_id']}: {sentence['text']}")
+            sent_0001: 大家好，欢迎参加这次会议。
+            sent_0002: 今天我们要讨论项目进展。
+        """
+        from backend.schemas.transcription import ASRSegment
+        
+        # 先获取带时间戳的原始segments，用于时间分配
+        timestamp_segments = self.transcribe_with_timestamps(
+            audio_path,
+            target_lang=target_lang,
+            beam_size=beam_size,
+            best_of=best_of,
+            patience=patience
+        )
+        
+        # 合并所有文本
+        full_text = " ".join([text for _, _, text in timestamp_segments])
+        
+        # 根据语言进行句子分割
+        if target_lang == "zh":
+            # 中文句子分割：使用。！？作为分隔符
+            import re
+            sentences = re.split(r'([。！？])', full_text)
+            # 重新组合句子
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['。', '！', '？']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            # 处理最后一个不完整的句子
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+                
+        elif target_lang == "en":
+            # 英文句子分割：使用. ! ?作为分隔符
+            import re
+            sentences = re.split(r'([.!?])', full_text)
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['.', '!', '?']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+                
+        else:
+            # 其他语言：简单按标点分割
+            import re
+            sentences = re.split(r'([.!?。！？])', full_text)
+            result_sentences = []
+            current_sentence = ""
+            
+            for part in sentences:
+                current_sentence += part
+                if part in ['.', '!', '?', '。', '！', '？']:
+                    if current_sentence.strip():
+                        result_sentences.append(current_sentence.strip())
+                    current_sentence = ""
+            
+            if current_sentence.strip():
+                result_sentences.append(current_sentence.strip())
+        
+        # 过滤掉太短的句子片段
+        result_sentences = [s for s in result_sentences if len(s.strip()) > 1]
+        
+        # 为句子分配时间戳（近似分配）
+        total_duration = timestamp_segments[-1][1] if timestamp_segments else 0.0
+        sentence_segments = []
+        
+        for idx, sentence_text in enumerate(result_sentences):
+            # 基于句子在列表中的位置分配时间戳
+            start_time = (idx / len(result_sentences)) * total_duration
+            end_time = ((idx + 1) / len(result_sentences)) * total_duration
+            
+            sentence_segment = ASRSegment(
+                segment_id=f"seg_{idx+1:04d}",  # 按照docs规范使用seg_xxxx格式
+                start=round(start_time, 2),
+                end=round(end_time, 2),
+                text=sentence_text,
+                lang=target_lang,
+                confidence=0.85  # 句子级别的置信度略低
+            ).model_dump()
+            
+            sentence_segments.append(sentence_segment)
+        
+        logger.info(f"按句子分割完成，共 {len(sentence_segments)} 个句子")
+        return sentence_segments
     
     def transcribe_with_timestamps(
         self,
@@ -251,21 +385,20 @@ class WhisperService:
         if not audio_path.exists():
             raise FileNotFoundError(f"音频文件不存在: {audio_path}")
         
-        # 获取语言配置
+        # 获取语言配置，但不直接使用 initial_prompt，避免提示词污染输出
         lang_config = self.SUPPORTED_LANGUAGES.get(target_lang)
-        initial_prompt = lang_config["initial_prompt"] if lang_config else None
+        actual_language = lang_config["code"] if lang_config else None
         
         logger.info(f"开始转录音频（带时间戳）: {audio_path}")
         
         try:
             segments, _ = self.model.transcribe(
                 str(audio_path),
-                initial_prompt=initial_prompt,
+                language=actual_language,
                 beam_size=beam_size,
                 best_of=best_of,
                 patience=patience,
-                condition_on_previous_text=True,
-                verbose=False
+                condition_on_previous_text=False
             )
             
             # 提取带时间戳的结果

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import uuid
 from datetime import datetime
@@ -309,7 +310,12 @@ class MeetingService:
     def _run_asr(self, *, audio_path: str, target_lang: str) -> list[dict[str, Any]]:
         from backend.modules.asr.whisper_service import WhisperService
 
-        return WhisperService().transcribe_with_asr_segments(audio_path, target_lang=target_lang)
+        service = WhisperService(
+            model_size=os.getenv("WHISPER_MODEL_SIZE", "large-v3"),
+            device=os.getenv("WHISPER_DEVICE", "cpu"),
+            compute_type=os.getenv("WHISPER_COMPUTE_TYPE", "int8"),
+        )
+        return service.transcribe_with_asr_segments(audio_path, target_lang=target_lang)
 
     def _run_diarization(self, state: dict[str, Any]) -> list[dict[str, Any]]:
         from backend.modules.diarization.service import run_diarization
@@ -413,7 +419,7 @@ class MeetingService:
         state_path = self._state_path(meeting_id)
         if not state_path.exists():
             return None
-        return json.loads(state_path.read_text(encoding="utf-8"))
+        return json.loads(state_path.read_text(encoding="utf-8-sig"))
 
     def _save_state(self, state: dict[str, Any]) -> None:
         state_path = self._state_path(state["meeting_id"])
