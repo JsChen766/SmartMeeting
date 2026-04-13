@@ -19,7 +19,7 @@ from .schemas import (
     SpeakerSegment,
 )
 
-DEFAULT_MODEL_ID = "pyannote/speaker-diarization-3.1"
+DEFAULT_MODEL_ID = "pyannote/speaker-diarization@2.1"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 LOCAL_TOKEN_PATH = PROJECT_ROOT / "backend" / ".hf_token"
 MERGE_GAP_SECONDS = 0.35
@@ -176,7 +176,10 @@ class DiarizationModule:
                 else {"token": auth_token}
             )
             if revision:
-                auth_kwargs["revision"] = revision
+                if "revision" in signature.parameters:
+                    auth_kwargs["revision"] = revision
+                else:
+                    model_id = f"{model_id}@{revision}"
             pipeline = Pipeline.from_pretrained(model_id, **auth_kwargs)
         except Exception as exc:
             raise DiarizationProcessingError(

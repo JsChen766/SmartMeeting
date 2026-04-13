@@ -1,7 +1,13 @@
 from fastapi import BackgroundTasks, FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+from pathlib import Path
 
 from backend.app.meeting_service import MeetingService
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_ROOT / ".env")
 
 
 class ProcessMeetingRequest(BaseModel):
@@ -17,6 +23,16 @@ def create_app() -> FastAPI:
         title="Smart Meeting Assistant API",
         version="0.1.0",
         description="Minimal FastAPI skeleton for the Smart Meeting Assistant backend.",
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     @app.get("/health", tags=["system"])
