@@ -19,7 +19,7 @@ from .schemas import (
     SpeakerSegment,
 )
 
-DEFAULT_MODEL_ID = "pyannote/speaker-diarization@2.1"
+DEFAULT_MODEL_ID = "pyannote/speaker-diarization-3.1"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 LOCAL_TOKEN_PATH = PROJECT_ROOT / "backend" / ".hf_token"
 MERGE_GAP_SECONDS = 0.35
@@ -130,6 +130,11 @@ class DiarizationModule:
     def _get_pipeline(self, options: DiarizationOptions | None) -> Any:
         model_id = (options.model_id if options and options.model_id else self._default_model_id).strip()
         auth_token = options.auth_token if options and options.auth_token else self._default_auth_token
+        revision: str | None = None
+        if "@" in model_id:
+            model_id, revision = model_id.split("@", 1)
+            model_id = model_id.strip()
+            revision = revision.strip() or None
 
         if not auth_token:
             raise DiarizationProcessingError(
@@ -170,6 +175,8 @@ class DiarizationModule:
                 if "use_auth_token" in signature.parameters
                 else {"token": auth_token}
             )
+            if revision:
+                auth_kwargs["revision"] = revision
             pipeline = Pipeline.from_pretrained(model_id, **auth_kwargs)
         except Exception as exc:
             raise DiarizationProcessingError(
@@ -404,18 +411,48 @@ class DiarizationModule:
             if options.max_speakers is not None:
                 pipeline_kwargs["max_speakers"] = options.max_speakers
 
+        in_memory_exc: Exception | None = None
+        try:
+            waveform_input = self._build_in_memory_audio_input(audio_path)
+            return pipeline(waveform_input, **pipeline_kwargs)
+        except Exception as exc:
+            in_memory_exc = exc
+
         try:
             return pipeline(str(audio_path), **pipeline_kwargs)
         except Exception as exc:
+            details: dict[str, Any] = {"audio_path": str(audio_path), "reason": str(exc)}
+            if in_memory_exc is not None:
+                details["in_memory_reason"] = str(in_memory_exc)
             raise DiarizationProcessingError(
                 code="DIARIZATION_MODEL_FAILED",
                 message="speaker diarization pipeline execution failed",
-                details={"audio_path": str(audio_path), "reason": str(exc)},
+                details=details,
             ) from exc
 
+    def _build_in_memory_audio_input(self, audio_path: Path) -> dict[str, Any]:
+        try:
+            import soundfile as sf
+            import torch
+        except ImportError as exc:
+            raise DiarizationProcessingError(
+                code="DIARIZATION_DEPENDENCY_MISSING",
+                message="soundfile and torch are required for in-memory diarization input",
+                details={"reason": str(exc)},
+            ) from exc
+
+        waveform, sample_rate = sf.read(str(audio_path), dtype="float32", always_2d=True)
+        # pyannote expects shape (channel, time)
+        tensor = torch.from_numpy(waveform.T.copy())
+        return {
+            "waveform": tensor,
+            "sample_rate": int(sample_rate),
+        }
+
     def _build_speaker_segments(self, diarization_result: Any) -> list[SpeakerSegment]:
+        annotation = self._extract_annotation(diarization_result)
         raw_segments: list[tuple[float, float, str]] = []
-        for speech_turn, _, raw_speaker in diarization_result.itertracks(yield_label=True):
+        for speech_turn, _, raw_speaker in annotation.itertracks(yield_label=True):
             start = round(float(speech_turn.start), 2)
             end = round(float(speech_turn.end), 2)
             if end <= start:
@@ -453,6 +490,24 @@ class DiarizationModule:
         merged_segments = self._merge_adjacent_segments(speaker_segments)
         cleaned_segments = self._collapse_pseudo_speakers(merged_segments)
         return self._merge_adjacent_segments(cleaned_segments)
+
+    def _extract_annotation(self, diarization_result: Any) -> Any:
+        if hasattr(diarization_result, "itertracks"):
+            return diarization_result
+
+        for attr_name in ("speaker_diarization", "exclusive_speaker_diarization", "annotation"):
+            candidate = getattr(diarization_result, attr_name, None)
+            if candidate is not None and hasattr(candidate, "itertracks"):
+                return candidate
+
+        raise DiarizationProcessingError(
+            code="DIARIZATION_MODEL_FAILED",
+            message="speaker diarization output is not supported",
+            details={
+                "result_type": str(type(diarization_result)),
+                "available_attrs": [name for name in dir(diarization_result) if not name.startswith("_")][:30],
+            },
+        )
 
     def _extract_meeting_id_from_path(self, audio_path: Path) -> str | None:
         for part in audio_path.parts:
