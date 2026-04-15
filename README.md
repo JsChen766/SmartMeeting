@@ -46,6 +46,7 @@ project-root/
 - `docs/api/api_overview.md`：说明 API 层职责和前后端协作方式。
 - `docs/api/endpoints_spec.md`：定义建议接口及其请求响应。
 - `docs/api/request_response_schema.md`：统一前后端请求响应格式和展示字段。
+- `docs/frontend/frontend_design_overview.md`：前端开发规范、页面设计、接口对齐与协作分工。
 
 ## 开发顺序建议
 
